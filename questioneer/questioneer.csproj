@@ -6,6 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="config.yml" />
+    <None Remove="teams.yml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Discord.Net" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.4" />
@@ -13,9 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="config.yml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <EmbeddedResource Include="config.yml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="teams.yml" />
   </ItemGroup>
 
 </Project>
