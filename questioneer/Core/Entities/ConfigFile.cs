@@ -13,6 +13,7 @@ namespace questioneer.Core.Entities
         public int Version { get; private set; }
         public LogSeverity LogSeverity { get; private set; }
         public string BotToken { get; private set; }
+        public byte Delay { get; private set; }
 
         public event VersionMismatchHandler VersionMismatch;
 
@@ -21,6 +22,7 @@ namespace questioneer.Core.Entities
             Version = GetVersion();
             LogSeverity = GetLogSeverity();
             BotToken = GetBotToken();
+            Delay = GetDelay();
 
             base.OnChanged();
         }
@@ -28,7 +30,7 @@ namespace questioneer.Core.Entities
         private int GetVersion()
         {
             var versionValue = Configuration["version"];
-            int.TryParse(versionValue, out var version);
+            var version = int.Parse(versionValue);
 
             if (version != NewestVersion)
                 VersionMismatch?.Invoke(version, NewestVersion);
@@ -39,13 +41,18 @@ namespace questioneer.Core.Entities
         public LogSeverity GetLogSeverity()
         {
             var loggingValue = Configuration["logging"];
-            Enum.TryParse(typeof(LogSeverity), loggingValue, true, out var logSeverity);
-            return (LogSeverity)logSeverity;
+            return (LogSeverity)Enum.Parse(typeof(LogSeverity), loggingValue, true);
         }
 
         public string GetBotToken()
         {
             return Configuration["discord:token"];
+        }
+
+        private byte GetDelay()
+        {
+            var delayValue = Configuration["delay"];
+            return byte.Parse(delayValue);
         }
     }
 }

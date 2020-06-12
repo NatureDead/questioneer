@@ -24,28 +24,37 @@ namespace questioneer
 
                 var discordClient = _serviceProvider.GetRequiredService<DiscordSocketClient>();
                 var commandService = _serviceProvider.GetRequiredService<CommandService>();
-                var configurationSerivce = _serviceProvider.GetRequiredService<ConfigurationService>();
+                var configurationService = _serviceProvider.GetRequiredService<ConfigurationService>();
+
+                #region startup
 
                 discordClient.Log += LogAsync;
                 commandService.Log += LogAsync;
 
-                await discordClient.LoginAsync(TokenType.Bot, configurationSerivce.ConfigFile.BotToken).ConfigureAwait(false);
+                await discordClient.LoginAsync(TokenType.Bot, configurationService.ConfigFile.BotToken).ConfigureAwait(false);
                 await discordClient.StartAsync().ConfigureAwait(false);
 
-                discordClient.MessageReceived += async (socketMessage) =>
+                #endregion startup
+
+                #region command handler
+
+                discordClient.MessageReceived += async (message) =>
                 {
-                    if (!(socketMessage is SocketUserMessage socketUserMessage)) return;
-                    if (socketUserMessage.Source != MessageSource.User) return;
+                    if (!(message is SocketUserMessage userMessage)) return;
+                    if (userMessage.Source != MessageSource.User) return;
 
                     var argPos = 1;
-                    if (!socketUserMessage.HasMentionPrefix(discordClient.CurrentUser, ref argPos))
-                        return;
-
-                    var context = new SocketCommandContext(discordClient, socketUserMessage);
-                    await commandService.ExecuteAsync(context, argPos, _serviceProvider).ConfigureAwait(false);
+                    if (userMessage.HasMentionPrefix(discordClient.CurrentUser, ref argPos) ||
+                        userMessage.HasCharPrefix('!', ref argPos))
+                    {
+                        var commandContext = new SocketCommandContext(discordClient, userMessage);
+                        await commandService.ExecuteAsync(commandContext, argPos, _serviceProvider).ConfigureAwait(false);
+                    }
                 };
 
                 await commandService.AddModulesAsync(Assembly.GetEntryAssembly(), _serviceProvider).ConfigureAwait(false);
+
+                #endregion command handler
             }
             catch (Exception exception)
             {

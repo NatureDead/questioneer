@@ -15,6 +15,9 @@
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="messages.yml" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="2.2.0" />
@@ -25,6 +28,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="config.yml" />
+    <EmbeddedResource Include="messages.yml" />
     <EmbeddedResource Include="teams.yml" />
   </ItemGroup>
 </Project>

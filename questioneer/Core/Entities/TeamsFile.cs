@@ -25,7 +25,7 @@ namespace questioneer.Core.Entities
             {
                 var name = section["name"];
                 var channelString = section["channel"];
-                var channel = long.Parse(channelString);
+                var channel = ulong.Parse(channelString);
 
                 teams.Add(new Team { Name = name, Channel = channel });
             }

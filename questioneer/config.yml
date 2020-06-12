@@ -9,3 +9,6 @@ logging: warning
 discord:
   # This refers to the token from your bot. It's mandatory.
   token: <insert token here>
+
+# Use this if you want to delay the question after you send the command (eg. equal to your stream delay).
+delay: 8

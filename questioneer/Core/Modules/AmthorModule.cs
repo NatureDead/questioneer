@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Discord;
 using Discord.Commands;
 
 namespace questioneer.Core.Modules
@@ -10,31 +9,35 @@ namespace questioneer.Core.Modules
         public Task AmthorAsync()
         {
             return PostMessage("Hey Rezo, du alter Zerstörer!",
-                "https://www.youtube.com/watch?v=4IKUlVe2t-g");
+                "https://youtu.be/4IKUlVe2t-g");
         }
 
         [Command("spahn")]
         public Task SpahnAsync()
         {
-            return PostMessage("Hört auf die Wissenschaftler! Hört auf die Fakten!",
-                "https://www.youtube.com/watch?v=40MJUEQ6RJM");
+            return PostMessage("Also man kann heute als äh Elektroniker, als Mechatroniker äh als " +
+                "als Zimmerer äh mehr verdienen als mancher Anwalt.",
+                "https://youtu.be/40MJUEQ6RJM");
         }
 
-        private static IUserMessage _text;
-        private static IUserMessage _link;
+        [Command("merkel")]
+        public Task MerkelAsync()
+        {
+            return PostMessage("Jedem Anfang wohnt ein Zauber inne, der uns beschützt und der uns hilft zu leben.",
+                "https://youtu.be/reCMB81A70k");
+        }
+
+        [Command("söder")]
+        public Task SoederAsync()
+        {
+            return PostMessage("Der bayrische Weg war richtig.",
+                "https://youtu.be/RQMdutoWHLM");
+        }
 
         private async Task PostMessage(string text, string link)
         {
-            if (_text == null)
-            {
-                _text = await ReplyAsync(text).ConfigureAwait(false);
-                _link = await ReplyAsync(link).ConfigureAwait(false);
-            }
-            else
-            {
-                await _text.ModifyAsync(x => x.Content = text).ConfigureAwait(false);
-                await _link.ModifyAsync(x => x.Content = link).ConfigureAwait(false);
-            }
+            await ReplyAsync(text).ConfigureAwait(false);
+            await ReplyAsync(link).ConfigureAwait(false);
         }
     }
 }

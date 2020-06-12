@@ -3,6 +3,6 @@
     public class Team
     {
         public string Name { get; set; }
-        public long Channel { get; set; }
+        public ulong Channel { get; set; }
     }
 }

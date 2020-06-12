@@ -20,6 +20,7 @@ namespace questioneer.Core.Services
                 {
                     LogLevel = configurationService.ConfigFile.LogSeverity
                 }))
+                .AddSingleton<QuestionService>()
                 .BuildServiceProvider();
         }
     }

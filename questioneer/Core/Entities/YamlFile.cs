@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Microsoft.Extensions.Configuration;
 using questioneer.Core.Entities.Events;
 
@@ -50,8 +49,6 @@ namespace questioneer.Core.Entities
             using var fileStream = new FileStream(path, FileMode.CreateNew);
 
             stream.CopyTo(fileStream);
-
-            throw new InvalidOperationException($"{resourceName} was created.");
         }
 
         protected virtual void OnChanged()
