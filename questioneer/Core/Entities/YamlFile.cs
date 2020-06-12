@@ -7,7 +7,7 @@ namespace questioneer.Core.Entities
 {
     public abstract class YamlFile
     {
-        private IConfiguration _configuration;
+        protected IConfiguration Configuration { get; private set; }
 
         protected abstract string ResourceName { get; }
 
@@ -15,12 +15,6 @@ namespace questioneer.Core.Entities
 
         protected YamlFile()
         {
-        }
-
-        public string this[string key]
-        {
-            get { return _configuration[key]; }
-            set { _configuration[key] = value; }
         }
 
         public static T Get<T>() where T : YamlFile, new()
@@ -39,9 +33,9 @@ namespace questioneer.Core.Entities
                 .SetBasePath(basePath)
                 .AddYamlFile(resourceName, false, true);
 
-            _configuration = configurationBuilder.Build();
+            Configuration = configurationBuilder.Build();
 
-            var reloadToken = _configuration.GetReloadToken();
+            var reloadToken = Configuration.GetReloadToken();
             reloadToken.RegisterChangeCallback(x => OnChanged(), null);
 
             OnChanged();

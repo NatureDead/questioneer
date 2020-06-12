@@ -1,7 +1,7 @@
 ﻿# Enter the avaible teams with their respective channels.
 # To retrieve the channel id, enable the developer mode in discord and right click the channel.
 teams:
-	- name: Team 1
-	  channel: 720208143598223400
-	- name: Team 2
-	  channel: 720208280437129268
+  - name: Team 1
+    channel: 720208143598223400
+  - name: Team 2
+    channel: 720208280437129268

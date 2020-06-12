@@ -10,9 +10,9 @@ namespace questioneer.Core.Entities
 
         protected override string ResourceName => "config.yml";
 
-        public int Version { get; set; }
-        public LogSeverity LogSeverity { get; set; }
-        public string BotToken { get; set; }
+        public int Version { get; private set; }
+        public LogSeverity LogSeverity { get; private set; }
+        public string BotToken { get; private set; }
 
         public event VersionMismatchHandler VersionMismatch;
 
@@ -27,7 +27,7 @@ namespace questioneer.Core.Entities
 
         private int GetVersion()
         {
-            var versionValue = this["version"];
+            var versionValue = Configuration["version"];
             int.TryParse(versionValue, out var version);
 
             if (version != NewestVersion)
@@ -38,14 +38,14 @@ namespace questioneer.Core.Entities
 
         public LogSeverity GetLogSeverity()
         {
-            var loggingValue = this["logging"];
+            var loggingValue = Configuration["logging"];
             Enum.TryParse(typeof(LogSeverity), loggingValue, true, out var logSeverity);
             return (LogSeverity)logSeverity;
         }
 
         public string GetBotToken()
         {
-            return this["discord:token"];
+            return Configuration["discord:token"];
         }
     }
 }
