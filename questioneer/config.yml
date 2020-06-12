@@ -7,5 +7,5 @@ logging: warning
 
 # This part is for the discord integration.
 discord:
-  # This refers to the token from your bot. This is necessary.
+  # This refers to the token from your bot. It's mandatory.
   token: <insert token here>
