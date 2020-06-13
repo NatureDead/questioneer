@@ -1,0 +1,11 @@
+﻿# The version of the config. If your config is outdated you'll get a warning.
+# Breaking changes may happen, please refer to the changelog for more information.
+version: 0
+
+# This is a list of all messages that are sent. You can change the messages if necessary.
+# Some messages contain placeholders. The comments above explain what is behind the placeholder. 
+# If you don't want to use the placeholder, just leave it out.
+
+# {0} = name of the question
+question_started: 'Question {0} has started!'
+question_stopped: 'Question {0} has ended!'

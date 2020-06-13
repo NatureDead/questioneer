@@ -1,16 +1,28 @@
-﻿namespace questioneer.Core.Entities
+﻿using System;
+
+namespace questioneer.Core.Entities
 {
     public class MessagesFile : YamlFile
     {
+        protected override int NewestVersion => 0;
         protected override string ResourceName => "messages.yml";
 
-        public string QuestionStarted { get; private set; }
-
-        protected override void OnChanged()
+        public string QuestionStarted(string questionName)
         {
-            QuestionStarted = Configuration["question_started"];
+            return string.Format(Configuration["question_started"], questionName);
+        }
 
-            base.OnChanged();
+        public string QuestionStopped(string questionName)
+        {
+            try
+            {
+                var xx = Configuration["question_stopped"];
+            }
+            catch (Exception exception)
+            {
+            }
+
+            return string.Format(Configuration["question_stopped"], questionName);
         }
     }
 }

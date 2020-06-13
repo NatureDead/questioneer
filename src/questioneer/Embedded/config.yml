@@ -1,9 +1,9 @@
-﻿# The version of the config. If your config is outdated you get a warning.
+﻿# The version of the config. If your config is outdated you'll get a warning.
 # Breaking changes may happen, please refer to the changelog for more information.
 version: 0
 
 # Possible values: { critical, error, warning, info, verbose, debug }
-logging: warning
+logging: info
 
 # This part is for the discord integration.
 discord:
@@ -11,4 +11,4 @@ discord:
   token: <insert token here>
 
 # Use this if you want to delay the question after you send the command (eg. equal to your stream delay).
-delay: 8
+delay: 0

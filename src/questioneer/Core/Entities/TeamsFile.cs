@@ -5,22 +5,23 @@ namespace questioneer.Core.Entities
 {
     public class TeamsFile : YamlFile
     {
+        protected override int NewestVersion => 0;
         protected override string ResourceName => "teams.yml";
 
         public List<Team> Teams { get; private set; }
 
         protected override void OnChanged()
         {
-            Teams = GetTeams();
-
             base.OnChanged();
+
+            Teams = GetTeams();
         }
 
         private List<Team> GetTeams()
         {
             var teams = new List<Team>();
-
             var teamsSection = Configuration.GetSection("teams");
+
             foreach (IConfigurationSection section in teamsSection.GetChildren())
             {
                 var name = section["name"];

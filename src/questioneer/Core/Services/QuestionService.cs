@@ -4,6 +4,7 @@ using System.Timers;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using questioneer.Core.Entities;
+using questioneer.Core.Extensions;
 
 namespace questioneer.Core.Services
 {
@@ -18,15 +19,9 @@ namespace questioneer.Core.Services
             _serviceProvider = serviceProvider;
         }
 
-        public Task StartQuestionAsync(Question question)
-        {
-            return SendQuestionAsync(question);
-        }
-
-        private async Task SendQuestionAsync(Question question)
+        public async Task StartQuestionAsync(Question question)
         {
             var configurationService = _serviceProvider.GetRequiredService<ConfigurationService>();
-            var discordClient = _serviceProvider.GetRequiredService<DiscordSocketClient>();
 
             var delay = configurationService.ConfigFile.Delay;
             var teams = configurationService.TeamsFile.Teams;
@@ -35,18 +30,29 @@ namespace questioneer.Core.Services
             var delayTimespan = TimeSpan.FromSeconds(delay);
             await Task.Delay(delayTimespan).ConfigureAwait(false);
 
-            foreach (var team in teams)
-            {
-                var channel = discordClient.GetChannel(team.Channel);
-                if (channel is SocketTextChannel textChannel)
-                {
-                    await textChannel.SendMessageAsync(messages.QuestionStarted).ConfigureAwait(false);
-                }
-            }
+            var durationTimespan = TimeSpan.FromSeconds(question.Duration);
+            _questionTimer = new Timer(durationTimespan.TotalMilliseconds);
+            _questionTimer.AutoReset = false;
+            _questionTimer.Elapsed += async (sender, eventArgs) => await StopQuestionAsync(question).ConfigureAwait(false);
+            _questionTimer.Start();
+
+            var discordClient = _serviceProvider.GetRequiredService<DiscordSocketClient>();
+            var questionStartedMessage = messages.QuestionStarted(question.Name);
+
+            await discordClient.SendMessageAsync(teams, questionStartedMessage).ConfigureAwait(false);
         }
 
-        public void StopQuestion()
+        public async Task StopQuestionAsync(Question question)
         {
+            var configurationService = _serviceProvider.GetRequiredService<ConfigurationService>();
+
+            var teams = configurationService.TeamsFile.Teams;
+            var messages = configurationService.MessagesFile;
+
+            var questionStoppedMessage = messages.QuestionStopped(question.Name);
+
+            var discordClient = _serviceProvider.GetRequiredService<DiscordSocketClient>();
+            await discordClient.SendMessageAsync(teams, questionStoppedMessage);
         }
     }
 }

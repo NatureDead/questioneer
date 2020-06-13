@@ -12,7 +12,7 @@ namespace questioneer.Core.Services
 
             return new ServiceCollection()
                 .AddSingleton(configurationService)
-                .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
+                .AddSingleton<DiscordSocketClient>(new DiscordSocketClient(new DiscordSocketConfig
                 {
                     LogLevel = configurationService.ConfigFile.LogSeverity
                 }))

@@ -6,10 +6,14 @@ namespace questioneer.Core.Entities
 {
     public abstract class YamlFile
     {
-        protected IConfiguration Configuration { get; private set; }
-
+        protected abstract int NewestVersion { get; }
         protected abstract string ResourceName { get; }
 
+        protected IConfiguration Configuration { get; private set; }
+
+        public int Version { get; private set; }
+
+        public event YamlFileVersionMismatchHandler VersionMismatch;
         public event YamlFileChangedHandler Changed;
 
         protected YamlFile()
@@ -35,7 +39,7 @@ namespace questioneer.Core.Entities
             Configuration = configurationBuilder.Build();
 
             var reloadToken = Configuration.GetReloadToken();
-            reloadToken.RegisterChangeCallback(x => OnChanged(), null);
+            reloadToken.RegisterChangeCallback(x => OnChangedInternal(), null);
 
             OnChanged();
         }
@@ -51,9 +55,26 @@ namespace questioneer.Core.Entities
             stream.CopyTo(fileStream);
         }
 
+        private void OnChangedInternal()
+        {
+            OnChanged();
+            Changed?.Invoke(this);
+        }
+
         protected virtual void OnChanged()
         {
-            Changed?.Invoke(this);
+            Version = GetVersion();
+        }
+
+        private int GetVersion()
+        {
+            var versionValue = Configuration["version"];
+            var version = int.Parse(versionValue);
+
+            if (version != NewestVersion)
+                VersionMismatch?.Invoke(version, NewestVersion);
+
+            return version;
         }
     }
 }
