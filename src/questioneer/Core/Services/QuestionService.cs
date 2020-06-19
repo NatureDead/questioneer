@@ -1,58 +1,75 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Timers;
-using Discord.WebSocket;
-using Microsoft.Extensions.DependencyInjection;
 using questioneer.Core.Entities;
-using questioneer.Core.Extensions;
 
 namespace questioneer.Core.Services
 {
     public class QuestionService
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly ILogService _logService;
+        private readonly ConfigurationService _configurationService;
+        private readonly DiscordService _discordService;
+        private readonly AnswerService _answerService;
 
         private Timer _questionTimer;
 
-        public QuestionService(IServiceProvider serviceProvider)
+        public QuestionService(ILogService logService, ConfigurationService configurationService,
+            DiscordService discordService, AnswerService answerService)
         {
-            _serviceProvider = serviceProvider;
+            _logService = logService;
+            _configurationService = configurationService;
+            _discordService = discordService;
+            _answerService = answerService;
         }
 
         public async Task StartQuestionAsync(Question question)
         {
-            var configurationService = _serviceProvider.GetRequiredService<ConfigurationService>();
+            try
+            {
+                var delayTimespan = _configurationService.ConfigFile.Delay;
+                await Task.Delay(delayTimespan).ConfigureAwait(false);
 
-            var delay = configurationService.ConfigFile.Delay;
-            var teams = configurationService.TeamsFile.Teams;
-            var messages = configurationService.MessagesFile;
+                var durationTimespan = TimeSpan.FromSeconds(question.Duration);
+                _questionTimer = new Timer(durationTimespan.TotalMilliseconds);
+                _questionTimer.AutoReset = false;
+                _questionTimer.Elapsed += async (sender, eventArgs) => await StopQuestionAsync(question).ConfigureAwait(false);
+                _questionTimer.Start();
 
-            var delayTimespan = TimeSpan.FromSeconds(delay);
-            await Task.Delay(delayTimespan).ConfigureAwait(false);
+                var answersMessage = default(AnswersMessage);
+                await _answerService.SendAnswersMessageAsync(answersMessage).ConfigureAwait(false);
 
-            var durationTimespan = TimeSpan.FromSeconds(question.Duration);
-            _questionTimer = new Timer(durationTimespan.TotalMilliseconds);
-            _questionTimer.AutoReset = false;
-            _questionTimer.Elapsed += async (sender, eventArgs) => await StopQuestionAsync(question).ConfigureAwait(false);
-            _questionTimer.Start();
+                var messages = _configurationService.MessagesFile;
+                var questionStartedMessage = messages.QuestionStarted(question.Name);
 
-            var discordClient = _serviceProvider.GetRequiredService<DiscordSocketClient>();
-            var questionStartedMessage = messages.QuestionStarted(question.Name);
-
-            await discordClient.SendMessageAsync(teams, questionStartedMessage).ConfigureAwait(false);
+                await SendMessageToTeamsAsync(questionStartedMessage).ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                _logService.Log(exception);
+            }
         }
 
         public async Task StopQuestionAsync(Question question)
         {
-            var configurationService = _serviceProvider.GetRequiredService<ConfigurationService>();
+            try
+            {
+                var messages = _configurationService.MessagesFile;
+                var questionStoppedMessage = messages.QuestionStopped(question.Name);
 
-            var teams = configurationService.TeamsFile.Teams;
-            var messages = configurationService.MessagesFile;
+                await SendMessageToTeamsAsync(questionStoppedMessage).ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                _logService.Log(exception);
+            }
+        }
 
-            var questionStoppedMessage = messages.QuestionStopped(question.Name);
-
-            var discordClient = _serviceProvider.GetRequiredService<DiscordSocketClient>();
-            await discordClient.SendMessageAsync(teams, questionStoppedMessage);
+        private async Task SendMessageToTeamsAsync(string message)
+        {
+            var teams = _configurationService.ChannelsFile.Teams;
+            foreach (var team in teams)
+                await _discordService.SendMessageAsync(team.Channel, message).ConfigureAwait(false);
         }
     }
 }

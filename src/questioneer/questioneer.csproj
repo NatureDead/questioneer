@@ -29,6 +29,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Embedded\config.yml" />
     <EmbeddedResource Include="Embedded\messages.yml" />
-    <EmbeddedResource Include="Embedded\teams.yml" />
+    <EmbeddedResource Include="Embedded\channels.yml" />
   </ItemGroup>
 </Project>

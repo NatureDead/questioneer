@@ -2,8 +2,11 @@
 # Breaking changes may happen, please refer to the changelog for more information.
 version: 0
 
-# Enter the avaible teams with their respective channels.
+# Enter the answers channel.
 # To retrieve the channel id, enable the developer mode in discord and right click the channel.
+answers_channel: 719635912681586839
+
+# Enter the avaible teams with their respective channels.
 teams:
   - name: Team 1
     channel: 720208143598223400

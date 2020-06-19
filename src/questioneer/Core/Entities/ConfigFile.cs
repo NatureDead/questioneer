@@ -10,7 +10,7 @@ namespace questioneer.Core.Entities
 
         public LogSeverity LogSeverity { get; private set; }
         public string BotToken { get; private set; }
-        public byte Delay { get; private set; }
+        public TimeSpan Delay { get; private set; }
 
         protected override void OnChanged()
         {
@@ -32,10 +32,11 @@ namespace questioneer.Core.Entities
             return Configuration["discord:token"];
         }
 
-        private byte GetDelay()
+        private TimeSpan GetDelay()
         {
             var delayValue = Configuration["delay"];
-            return byte.Parse(delayValue);
+            var delay = byte.Parse(delayValue);
+            return TimeSpan.FromSeconds(delay);
         }
     }
 }
