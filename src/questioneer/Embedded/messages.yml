@@ -9,3 +9,8 @@ version: 0
 # {0} = name of the question
 question_started: 'Question {0} has started!'
 question_stopped: 'Question {0} has ended!'
+
+no_answer: 'No answer'
+# {0} = name of the team
+# {1} = answer from the team
+answer_from_team: 'Team {0} - {1}'

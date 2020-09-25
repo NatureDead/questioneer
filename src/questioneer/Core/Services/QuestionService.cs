@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 using questioneer.Core.Entities;
@@ -13,6 +14,7 @@ namespace questioneer.Core.Services
         private readonly AnswerService _answerService;
 
         private Timer _questionTimer;
+        private ChannelListener _channelListener;
 
         public QuestionService(ILogService logService, ConfigurationService configurationService,
             DiscordService discordService, AnswerService answerService)
@@ -42,6 +44,8 @@ namespace questioneer.Core.Services
                 var messages = _configurationService.MessagesFile;
                 var questionStartedMessage = messages.QuestionStarted(question.Name);
 
+                _channelListener = CreateChannelListener();
+
                 await SendMessageToTeamsAsync(questionStartedMessage).ConfigureAwait(false);
             }
             catch (Exception exception)
@@ -57,6 +61,8 @@ namespace questioneer.Core.Services
                 var messages = _configurationService.MessagesFile;
                 var questionStoppedMessage = messages.QuestionStopped(question.Name);
 
+                _channelListener.Dispose();
+
                 await SendMessageToTeamsAsync(questionStoppedMessage).ConfigureAwait(false);
             }
             catch (Exception exception)
@@ -70,6 +76,12 @@ namespace questioneer.Core.Services
             var teams = _configurationService.ChannelsFile.Teams;
             foreach (var team in teams)
                 await _discordService.SendMessageAsync(team.Channel, message).ConfigureAwait(false);
+        }
+
+        private ChannelListener CreateChannelListener()
+        {
+            var teams = _configurationService.ChannelsFile.Teams;
+            return new ChannelListener(_discordService.DiscordSocketClient, teams.Select(x => x.Channel));
         }
     }
 }

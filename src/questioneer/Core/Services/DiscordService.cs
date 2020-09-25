@@ -21,5 +21,10 @@ namespace questioneer.Core.Services
 
             return Task.FromResult(default(IUserMessage));
         }
+
+        public Task<IUserMessage> StartListenChannels()
+        {
+            return Task.FromResult(default(IUserMessage));
+        }
     }
 }

@@ -17,6 +17,16 @@
             return GetMessage("question_stopped", questionName);
         }
 
+        public string NoAnswer()
+        {
+            return GetMessage("no_answer");
+        }
+
+        public string AnswerFromTeam(string teamName, string answerMessage)
+        {
+            return GetMessage("answer_from_team", teamName, answerMessage);
+        }
+
         private string GetMessage(string key, params object[] args)
         {
             var message = Configuration[key];

@@ -18,15 +18,24 @@ namespace questioneer.Core.Services
             _discordService = discordService;
         }
 
-        public async Task SendAnswersMessageAsync(AnswersMessage answersMessage)
+        public async Task SendAnswersMessageAsync(Question question, AnswersMessage answersMessage)
         {
             try
             {
                 var answersChannel = _configurationService.ChannelsFile.AnswersChannel;
+                var teams = _configurationService.ChannelsFile.Teams;
 
                 // Build answers message
                 await _discordService.SendMessageAsync(answersChannel, "Some").ConfigureAwait(false);
-                await _discordService.SendMessageAsync(answersChannel, "Messages").ConfigureAwait(false);
+
+                foreach (var team in teams)
+                {
+                    answersMessage.AnswersByTeams.TryGetValue(team, out var answerMessage);
+
+
+                    await _discordService.SendMessageAsync(answersChannel, ).ConfigureAwait(false);
+                }
+
                 await _discordService.SendMessageAsync(answersChannel, "You").ConfigureAwait(false);
                 await _discordService.SendMessageAsync(answersChannel, "See").ConfigureAwait(false);
                 await _discordService.SendMessageAsync(answersChannel, "Here").ConfigureAwait(false);
